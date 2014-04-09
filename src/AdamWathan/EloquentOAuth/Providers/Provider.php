@@ -1,8 +1,12 @@
 <?php namespace AdamWathan\EloquentOAuth\Providers;
 
+use Illuminate\Support\Facades\Log;
+
 use AdamWathan\EloquentOAuth\ProviderUserDetails as UserDetails;
 use AdamWathan\EloquentOAuth\ApplicationRejectedException;
 use AdamWathan\EloquentOAuth\InvalidAuthorizationCodeException;
+
+
 
 abstract class Provider implements ProviderInterface
 {
@@ -86,6 +90,10 @@ abstract class Provider implements ProviderInterface
 		try {
 			$response = $request->send();
 		} catch (\Exception $e) {
+			Log::error(
+            	"Provider:: Exception was thrown! Dump follows:\n" .
+                $e->__toString()
+            );
 			throw new InvalidAuthorizationCodeException;
 		}
 		return $this->parseTokenResponse((string) $response->getBody());

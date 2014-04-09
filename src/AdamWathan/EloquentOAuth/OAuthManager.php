@@ -4,6 +4,8 @@ use Closure;
 use Illuminate\Auth\AuthManager as Auth;
 use Illuminate\Routing\Redirector as Redirect;
 use Illuminate\Session\Store as Session;
+use Illuminate\Support\Facades\Log;
+
 use AdamWathan\EloquentOAuth\Providers\ProviderInterface;
 
 class OAuthManager
@@ -111,7 +113,11 @@ class OAuthManager
     protected function createUser($provider, ProviderUserDetails $details)
     {
         $user = new $this->model;
-        $user->save();
+        if (!$user->saveForEloquentOAuth($details))
+        {
+            Log::info("OAuthManager:: User not saved. Errors: " . var_export($user->errors(), true));
+            throw new Exception();
+        }
         $this->addAccessToken($user, $provider, $details);
         return $user;
     }
