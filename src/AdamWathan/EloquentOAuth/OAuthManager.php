@@ -99,6 +99,23 @@ class OAuthManager
 
     protected function getIdentity($provider, ProviderUserDetails $details)
     {
+        /* This method call would only get the user if exist in the OAuthIdentites table. 
+         * If the user already existed in the users table before, because he registered
+         * using the website own account, this still wouldn't find the user's identity.
+         * This creates a problem, because the login would then try to create the user,
+         * and maybe failing some steps later with duplicated email address, or what is 
+         * worst, not failing and duplicating users records.
+         *
+         * TODO: upgrade code to take this into cosideration and if the user previously 
+         * existed in the website but no record is registered in the OAuthIdentity, sync them.
+         * This might be accomplished by also providing a callback method in the User class, that
+         * takes the usersDetails object from the oauthlibrary, searches the website users, and
+         * returns whichs user IS the one provided (for sure querying by email address, but in this
+         * way we can allow the implementing site decide how). If no user is found to be the same, 
+         * it can return null (and now the user could be created safely)
+         * 
+         */
+        
         return $this->identities->getByProvider($provider, $details->userId);
     }
 
