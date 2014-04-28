@@ -63,6 +63,9 @@ class OAuthManager
     {
         $this->verifyState();
         $details = $this->getUserDetails($provider);
+        
+        Log::info("OAuthManager->login():: user details: " . var_export($details, true));
+
         $user = $this->getUser($provider, $details);
         if ($callback) {
             $callback($user, $details);
