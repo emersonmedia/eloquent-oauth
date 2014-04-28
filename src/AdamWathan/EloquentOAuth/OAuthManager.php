@@ -94,7 +94,31 @@ class OAuthManager
 
     protected function userExists($provider, ProviderUserDetails $details)
     {
-        return (bool) $this->getIdentity($provider, $details);
+
+        //look for user in Identities records
+        $identity = $this->getIdentity($provider, $details);
+
+        if (!$identity) 
+        {
+            //there's no identity for the user
+            //search it in the app users, as it might be already created there
+            //as an app user, and not with oauth.            
+            $userModel = new $this->model;
+            $user = $userModel->byEloquentOAuthUserDetails()->first();
+            if ($user)
+            {
+                //user exists in app, sync Identity
+                $this->addAccessToken($user, $provider, $details);
+            }
+            else
+            {
+                //user doesn't exist in app either
+                return false;
+            }
+        }
+
+        return true;
+
     }
 
     protected function getIdentity($provider, ProviderUserDetails $details)
@@ -106,13 +130,15 @@ class OAuthManager
          * and maybe failing some steps later with duplicated email address, or what is 
          * worst, not failing and duplicating users records.
          *
-         * TODO: upgrade code to take this into cosideration and if the user previously 
+         * TODO: upgrade code to take this into consideration and if the user previously 
          * existed in the website but no record is registered in the OAuthIdentity, sync them.
          * This might be accomplished by also providing a callback method in the User class, that
          * takes the usersDetails object from the oauthlibrary, searches the website users, and
          * returns whichs user IS the one provided (for sure querying by email address, but in this
          * way we can allow the implementing site decide how). If no user is found to be the same, 
          * it can return null (and now the user could be created safely)
+         *
+         * Done in method userExists. See above.
          * 
          */
         
@@ -130,7 +156,7 @@ class OAuthManager
     protected function createUser($provider, ProviderUserDetails $details)
     {
         $user = new $this->model;
-        if (!$user->saveForEloquentOAuth($details))
+        if (!$user->saveForEloquentOAuth($details)) //this callback should be enforced by an interface
         {
             Log::info("OAuthManager:: User not saved. Errors: " . var_export($user->errors(), true));
             throw new Exception();
@@ -153,7 +179,14 @@ class OAuthManager
     protected function addAccessToken($user, $provider, ProviderUserDetails $details)
     {
         $identity = new OAuthIdentity;
-        $identity->user_id = $user->getKey();
+        
+        //This is really the app user's user_id... so why name it key? This assumes that the
+        //user object in the app has the method "getKey()" returning objectId, this is not
+        //always like that. Better ask it with another method name and enforce it by an interface also.
+        
+        //$identity->user_id = $user->getKey();
+        $identity->user_id = $user->getIdForEloquentOAuth(); //this callback should be enforced by an interface
+
         $identity->provider = $provider;
         $identity->provider_user_id = $details->userId;
         $identity->access_token = $details->accessToken;
