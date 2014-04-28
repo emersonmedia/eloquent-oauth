@@ -63,7 +63,7 @@ class OAuthManager
     {
         $this->verifyState();
         $details = $this->getUserDetails($provider);
-        
+
         Log::info("OAuthManager->login():: user details: " . var_export($details, true));
 
         $user = $this->getUser($provider, $details);
@@ -107,7 +107,7 @@ class OAuthManager
             //search it in the app users, as it might be already created there
             //as an app user, and not with oauth.            
             $userModel = new $this->model;
-            $user = $userModel->byEloquentOAuthUserDetails()->first();
+            $user = $userModel->byEloquentOAuthUserDetails($details)->first();
             if ($user)
             {
                 //user exists in app, sync Identity
