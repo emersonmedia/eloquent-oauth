@@ -76,7 +76,7 @@ class OAuthManager
     protected function verifyState()
     {
         if (! isset($_GET['state']) || $_GET['state'] !== $this->getState()) {
-            throw new InvalidAuthorizationCodeException;
+            throw new InvalidAuthorizationCodeException("this->getState() = " . $this->getState() . "  -  GET[state] = " . $_GET['state']);
         }
     }
 
