@@ -80,10 +80,11 @@ class OAuthManager
         
         $resp = $this->auth->login($user);
         Log::info("OAuthManager->login():: Auth->login response: " . var_export($resp, true));
-        if (!$this->auth->login($user))
+        
+        /*if (!$this->auth->login($user))
         {
             throw new InvalidAuthorizationCodeException("Auth::login(user) is returning false!!!!");            
-        }
+        }*/
     }
 
     protected function verifyState()
