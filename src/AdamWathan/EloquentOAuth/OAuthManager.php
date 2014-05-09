@@ -71,13 +71,16 @@ class OAuthManager
         Log::info("OAuthManager->login():: user details: " . var_export($details, true));
 
         $user = $this->getUser($provider, $details);
+        Log::info("OAuthManager->login():: system user found: " . 
+            $user->id . " - " . $user->email . " - " . $user->password
+        );
         if ($callback) {
             $callback($user, $details);
         }
         
         if (!$this->auth->login($user))
         {
-            throw new InvalidAuthorizationCodeException("Auth::login(user) is returning false!!!!");
+            throw new InvalidAuthorizationCodeException("Auth::login(user) is returning false!!!!");            
         }
     }
 
