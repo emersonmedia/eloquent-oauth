@@ -80,7 +80,7 @@ class OAuthManager
         
         $resp = $this->auth->login($user);
         //$resp = $this->auth->loginUsingId($user->id);
-        Log::info("OAuthManager->login():: Auth->loginUsingId response: " . var_export($resp, true));
+        Log::info("OAuthManager->login():: Auth->login response: " . var_export($resp, true));
         
         /*if (!$this->auth->login($user))
         {
@@ -99,8 +99,10 @@ class OAuthManager
     protected function getUser($provider, $details)
     {
         if ($this->userExists($provider, $details)) {
+            Log::info("OAuthManager::getUser() : user exist, update");
             $user = $this->updateUser($provider, $details);
         } else {
+            Log::info("OAuthManager::getUser() : user is new, create");
             $user = $this->createUser($provider, $details);
         }
         return $user;
