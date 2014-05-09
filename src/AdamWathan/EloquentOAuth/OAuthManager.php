@@ -34,18 +34,21 @@ class OAuthManager
 
     public function authorize($provider)
     {
+        Log::info("OAuthManager->authorize():: $provider");
         $state = $this->generateState();
         return $this->redirect->to($this->getProvider($provider)->authorizeUrl($state));
     }
 
     protected function generateState()
     {
+        Log::info("OAuthManager->generateState()::");
         $this->setState($state = str_random());
         return $state;
     }
 
     protected function setState($state)
     {
+        Log::info("OAuthManager->setState():: oauth.state = " . $state);
         $this->session->put('oauth.state', $state);
     }
 
@@ -61,6 +64,7 @@ class OAuthManager
 
     public function login($provider, Closure $callback = null)
     {
+        Log::info("OAuthManager->login()::");
         $this->verifyState();
         $details = $this->getUserDetails($provider);
 
@@ -75,6 +79,7 @@ class OAuthManager
 
     protected function verifyState()
     {
+        Log::info("OAuthManager->verifyState()::");
         if (! isset($_GET['state']) || $_GET['state'] !== $this->getState()) {
             throw new InvalidAuthorizationCodeException("this->getState() = " . $this->getState() . "  -  GET[state] = " . $_GET['state']);
         }
@@ -159,7 +164,7 @@ class OAuthManager
     protected function createUser($provider, ProviderUserDetails $details)
     {
         $user = new $this->model;
-        if (!$user->saveForEloquentOAuth($details)) //this callback should be enforced by an interface
+        if (!$user->saveForEloquentOAuth($details)) //this callback should be enforced by an interface, better on a seperate class as a REsource
         {
             Log::info("OAuthManager:: User not saved. Errors: " . var_export($user->errors(), true));
             throw new Exception();
