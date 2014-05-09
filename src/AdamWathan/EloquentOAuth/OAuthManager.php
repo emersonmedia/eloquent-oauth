@@ -174,12 +174,16 @@ class OAuthManager
 
     protected function createUser($provider, ProviderUserDetails $details)
     {
+        Log::info("OAuthManager::createUser()");
         $user = new $this->model;
         if (!$user->saveForEloquentOAuth($details)) //this callback should be enforced by an interface, better on a seperate class as a REsource
         {
             Log::info("OAuthManager:: User not saved. Errors: " . var_export($user->errors(), true));
             throw new Exception();
         }
+
+        Log::info("OAuthManager::createUser - User data: " . $user->id . " - " . $user->email);
+
         $this->addAccessToken($user, $provider, $details);
         return $user;
     }
@@ -197,11 +201,17 @@ class OAuthManager
 
     protected function addAccessToken($user, $provider, ProviderUserDetails $details)
     {
+
+        Log::info("OAuthManager::addAccessToken()");
+
         $identity = new OAuthIdentity;
         
         //This is really the app user's user_id... so why name it key? This assumes that the
         //user object in the app has the method "getKey()" returning objectId, this is not
         //always like that. Better ask it with another method name and enforce it by an interface also.
+
+        Log::info("OAuthManager::addAccessToken - User getKey() = " . $user->getKey());
+        Log::info("OAuthManager::addAccessToken - User getIdForEloquentOAuth() = " . $user->getIdForEloquentOAuth());
         
         //$identity->user_id = $user->getKey();
         $identity->user_id = $user->getIdForEloquentOAuth(); //this callback should be enforced by an interface
