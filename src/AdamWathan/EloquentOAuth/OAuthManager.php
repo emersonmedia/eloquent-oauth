@@ -79,7 +79,7 @@ class OAuthManager
         }
         
         //$resp = $this->auth->login($user);
-        $resp = $this->auth->loginUsingId($user->id)
+        $resp = $this->auth->loginUsingId($user->id);
         Log::info("OAuthManager->login():: Auth->loginUsingId response: " . var_export($resp, true));
         
         /*if (!$this->auth->login($user))
