@@ -74,7 +74,11 @@ class OAuthManager
         if ($callback) {
             $callback($user, $details);
         }
-        $this->auth->login($user);
+        
+        if (!$this->auth->login($user))
+        {
+            throw new InvalidAuthorizationCodeException("Auth::login(user) is returning false!!!!");
+        }
     }
 
     protected function verifyState()
