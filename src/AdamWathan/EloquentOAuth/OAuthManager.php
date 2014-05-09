@@ -78,8 +78,8 @@ class OAuthManager
             $callback($user, $details);
         }
         
-        //$resp = $this->auth->login($user);
-        $resp = $this->auth->loginUsingId($user->id);
+        $resp = $this->auth->login($user);
+        //$resp = $this->auth->loginUsingId($user->id);
         Log::info("OAuthManager->login():: Auth->loginUsingId response: " . var_export($resp, true));
         
         /*if (!$this->auth->login($user))
@@ -206,17 +206,10 @@ class OAuthManager
         Log::info("OAuthManager::addAccessToken()");
 
         $identity = new OAuthIdentity;
-        
-        //This is really the app user's user_id... so why name it key? This assumes that the
-        //user object in the app has the method "getKey()" returning objectId, this is not
-        //always like that. Better ask it with another method name and enforce it by an interface also.
 
         Log::info("OAuthManager::addAccessToken - User getKey() = " . $user->getKey());
-        Log::info("OAuthManager::addAccessToken - User getIdForEloquentOAuth() = " . $user->getIdForEloquentOAuth());
-        
-        //$identity->user_id = $user->getKey();
-        $identity->user_id = $user->getIdForEloquentOAuth(); //this callback should be enforced by an interface
 
+        $identity->user_id = $user->getKey();
         $identity->provider = $provider;
         $identity->provider_user_id = $details->userId;
         $identity->access_token = $details->accessToken;
