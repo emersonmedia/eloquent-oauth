@@ -175,10 +175,11 @@ class OAuthManager
     protected function createUser($provider, ProviderUserDetails $details)
     {
         Log::info("OAuthManager::createUser()");
-        $user = new $this->model;
-        if (!$user->saveForEloquentOAuth($details)) //this callback should be enforced by an interface, better on a seperate class as a REsource
+        $userModel = new $this->model;
+        $user = $userModel->saveForEloquentOAuth($details); //this callback should be enforced by an interface, better on a seperate class as a REsource
+        if (!$user) 
         {
-            Log::info("OAuthManager:: User not saved. Errors: " . var_export($user->errors(), true));
+            Log::info("OAuthManager:: User not saved.");
             throw new Exception();
         }
 
