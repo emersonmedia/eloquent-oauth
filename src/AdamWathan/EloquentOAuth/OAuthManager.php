@@ -78,8 +78,9 @@ class OAuthManager
             $callback($user, $details);
         }
         
-        $resp = $this->auth->login($user);
-        Log::info("OAuthManager->login():: Auth->login response: " . var_export($resp, true));
+        //$resp = $this->auth->login($user);
+        $resp = $this->auth->loginUsingId($user->id)
+        Log::info("OAuthManager->login():: Auth->loginUsingId response: " . var_export($resp, true));
         
         /*if (!$this->auth->login($user))
         {
