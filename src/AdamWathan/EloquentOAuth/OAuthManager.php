@@ -104,7 +104,9 @@ class OAuthManager
             $user = $this->updateUser($provider, $details);
         } else {
 
-            if (Config::get('eloquent-oauth::exception-on-user-not-exits', false)) {
+            $throwException = Config::get('eloquent-oauth::exception-on-user-not-exits', false);
+            Log::info("OAuthManager::getUser() : throwException = " . var_export($throwException, true));
+            if (!$throwException) {
                 Log::info("OAuthManager::getUser() : user is new, create");
                 $user = $this->createUser($provider, $details);
             } else {
