@@ -5,6 +5,7 @@ use Illuminate\Auth\AuthManager as Auth;
 use Illuminate\Routing\Redirector as Redirect;
 use Illuminate\Session\Store as Session;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
 use AdamWathan\EloquentOAuth\Providers\ProviderInterface;
 
@@ -102,8 +103,13 @@ class OAuthManager
             Log::info("OAuthManager::getUser() : user exist, update");
             $user = $this->updateUser($provider, $details);
         } else {
-            Log::info("OAuthManager::getUser() : user is new, create");
-            $user = $this->createUser($provider, $details);
+
+            if (Config::get('eloquent-oauth::exception-on-user-not-exits', false)) {
+                Log::info("OAuthManager::getUser() : user is new, create");
+                $user = $this->createUser($provider, $details);
+            } else {
+                throw new UserNotExistsException();
+            }
         }
         return $user;
     }
