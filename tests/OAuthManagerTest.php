@@ -63,11 +63,17 @@ class OAuthManagerTest extends PHPUnit_Framework_TestCase
 
         $user = M::mock('stdClass')->shouldIgnoreMissing();
 
+        OAuthManager::configure([
+            'app-user-not-found-behavior' => 'create',
+        ]);
         $oauth = new OAuthManager($auth, $redirector, $stateManager, $users, $identities);
+
         $oauth->registerProvider('provider', $provider);
 
         $stateManager->shouldReceive('verifyState')->andReturn(true);
         $provider->shouldReceive('getUserDetails')->andReturn($userDetails);
+        $identities->shouldReceive('getIdentity')->andReturn(null);
+        $users->shouldReceive('findAppUser')->andReturn(null);
         $users->shouldReceive('create')->andReturn($user);
         $users->shouldReceive('store')->andReturn(true);
 
@@ -89,6 +95,9 @@ class OAuthManagerTest extends PHPUnit_Framework_TestCase
 
         $user = M::mock('stdClass')->shouldIgnoreMissing();
 
+        OAuthManager::configure([
+            'app-user-not-found-behavior' => 'create',
+        ]);
         $oauth = new OAuthManager($auth, $redirector, $stateManager, $users, $identities);
         $oauth->registerProvider('provider', $provider);
 
@@ -98,6 +107,7 @@ class OAuthManagerTest extends PHPUnit_Framework_TestCase
         $users->shouldReceive('create')->never();
         $users->shouldReceive('findByIdentity')->once()->andReturn($user);
         $users->shouldReceive('store')->andReturn(true);
+        $user->shouldReceive('getKey')->andReturn(1);
 
         $auth->shouldReceive('login')->with($user)->once();
         $result = $oauth->login('provider');

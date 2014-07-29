@@ -3,18 +3,31 @@
 use Closure;
 use Illuminate\Auth\AuthManager as Auth;
 use Illuminate\Routing\Redirector as Redirect;
+use Illuminate\Support\Facades\Config;
 use AdamWathan\EloquentOAuth\Exceptions\ProviderNotRegisteredException;
 use AdamWathan\EloquentOAuth\Exceptions\InvalidAuthorizationCodeException;
 use AdamWathan\EloquentOAuth\Providers\ProviderInterface;
 
 class OAuthManager
 {
+
+    protected static $config = array(
+        'app-user-not-found-behavior' => 'create',
+    );
+
     protected $auth;
     protected $redirect;
     protected $stateManager;
     protected $users;
     protected $identities;
     protected $providers = array();
+
+
+    public static function configure(array $config)
+    {
+        static::$config = $config;
+    }
+
 
     public function __construct(Auth $auth, Redirect $redirect, StateManager $stateManager, UserStore $users, IdentityStore $identities)
     {
@@ -24,6 +37,7 @@ class OAuthManager
         $this->users = $users;
         $this->identities = $identities;
     }
+
 
     public function registerProvider($alias, ProviderInterface $provider)
     {
@@ -84,7 +98,20 @@ class OAuthManager
         if ($this->userExists($provider, $details)) {
             $user = $this->getExistingUser($provider, $details);
         } else {
-            $user = $this->createUser();
+            // User doesn't exists yet in webapp.
+            // Take configured behaviour and proceed as needed.
+            $behavior = self::$config['app-user-not-found-behavior'];
+            switch ($behavior) {
+                case 'fail':
+                    // throw exception to be catched in webapp
+                    throw new AppUserNotFoundException;
+                    break;
+
+                default:
+                    // Create user
+                    $user = $this->createUser();
+                    break;
+            }
         }
         return $user;
     }
@@ -97,13 +124,33 @@ class OAuthManager
 
     protected function userExists($provider, ProviderUserDetails $details)
     {
-        return (bool) $this->getIdentity($provider, $details);
+        return (bool) $this->getExistingUser($provider, $details);
     }
 
     protected function getExistingUser($provider, $details)
     {
         $identity = $this->getIdentity($provider, $details);
-        return $this->users->findByIdentity($identity);
+
+        // A user might NOT exist in the identity table, but do exist in the
+        // webapp users table (Because it was registered to the webapp directly
+        // before using the social auth feature).
+        if (is_null($identity))
+        {
+            // Check to see if user actually exist on webapp
+            $appUser = $this->users->findAppUser($details);
+            if (is_null($appUser))
+            {
+                return null;
+            }
+            else
+            {
+                // Identity doesn't exists, but user is already created in
+                // webapp. Create the identity now to sync with user
+                // (this is done when login method calls $this->updateUser()).
+                return $appUser;
+            }
+        }
+
     }
 
     protected function getIdentity($provider, ProviderUserDetails $details)
@@ -137,4 +184,6 @@ class OAuthManager
         $identity->access_token = $details->accessToken;
         $this->identities->store($identity);
     }
+
+
 }

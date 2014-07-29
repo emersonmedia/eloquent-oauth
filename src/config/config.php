@@ -27,5 +27,35 @@ return array(
 			'redirect' => URL::to('your/linkedin/redirect'),
 			'scope' => array(),
 		),
-	)
+	),
+
+    /*
+    |--------------------------------------------------------------------------
+    | user-not-exists-behaviour
+    |--------------------------------------------------------------------------
+    |
+    | Config option that indicates the behaviour of OAuthManger when a user
+    | doesn't exists yet in the webapp. The configuration options available are:
+    | * 'create': If the user doesn't exist, it will create a new user for the
+    |       webapp.
+    | * 'fail': If the user doesn't exist, it will throw an
+    |       AppUserNotFoundException, that the app can catch and manage as
+    |       needed.
+    |
+    */
+    'app-user-not-found-behavior' => 'create',
+
+    /*
+    |--------------------------------------------------------------------------
+    | user-store
+    |--------------------------------------------------------------------------
+    |
+    | We need to know which concrete class provides the implementations for the
+    | interaction with the webapp user store.
+    | You can implement your own UserStore in your own app, by extending the
+    | AdamWathan\EloquentOAuth\UserStore and overriding the methods needed.
+    |
+     */
+    'user-store' => 'AdamWathan\EloquentOAuth\UserStore'
+
 );

@@ -44,7 +44,9 @@ class EloquentOAuthServiceProvider extends ServiceProvider {
         $this->app['adamwathan.oauth'] = $this->app->share(function($app)
     {
         $this->configureOAuthIdentitiesTable();
-        $users = new UserStore($app['config']['auth.model']);
+        $this->configureOAuthManager();
+        $userStoreClass = $app['config']['eloquent-oauth::user-store'];
+        $users = new $userStoreClass($app['config']['auth.model']);
         $stateManager = new StateManager($app['session.store'], $app['request']);
         $oauth = new OAuthManager($app['auth'], $app['redirect'], $stateManager, $users, new IdentityStore);
         $this->registerProviders($oauth);
@@ -67,6 +69,19 @@ class EloquentOAuthServiceProvider extends ServiceProvider {
     protected function configureOAuthIdentitiesTable()
     {
         OAuthIdentity::configureTable($this->app['config']['eloquent-oauth::table']);
+    }
+
+    /**
+     * Configures the OAuthManager class
+     *
+     * @author diego <diego@emersonmedia.com>
+     * @return void
+     */
+    protected function configureOAuthManager()
+    {
+        OAuthManager::configure([
+            'app-user-not-found-behavior' => $this->app['config']['eloquent-oauth::app-user-not-found-behavior'],
+        ]);
     }
 
     /**
