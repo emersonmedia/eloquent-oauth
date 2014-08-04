@@ -1,5 +1,7 @@
 <?php namespace AdamWathan\EloquentOAuth;
 
+use Illuminate\Support\Facades\Log;
+
 class UserStore
 {
     protected $model;
@@ -38,7 +40,9 @@ class UserStore
     public function findInApp(ProviderUserDetails $userDetails)
     {
         $user = new $this->model;
-        return $user->where('email', '=', $userDetails->email)
+        $user = $user->where('email', '=', $userDetails->email)
             ->first();
+        Log::info("UserStore::findInApp() --> User: " . print_r($user, true));
+        return $user;
     }
 }
