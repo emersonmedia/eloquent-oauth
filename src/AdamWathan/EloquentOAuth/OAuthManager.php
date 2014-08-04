@@ -4,6 +4,7 @@ use Closure;
 use Illuminate\Auth\AuthManager as Auth;
 use Illuminate\Routing\Redirector as Redirect;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use AdamWathan\EloquentOAuth\Exceptions\ProviderNotRegisteredException;
 use AdamWathan\EloquentOAuth\Exceptions\InvalidAuthorizationCodeException;
 use AdamWathan\EloquentOAuth\Providers\ProviderInterface;
@@ -47,7 +48,9 @@ class OAuthManager
     public function authorize($provider)
     {
         $state = $this->generateState();
-        return $this->redirect->to($this->getProvider($provider)->authorizeUrl($state));
+        $redirectTo = $this->getProvider($provider)->authorizeUrl($state)
+        Log::info("OAuthManager::authorize() --> redirecting to: $redirectTo");
+        return $this->redirect->to($redirectTo);
     }
 
     public function login($provider, Closure $callback = null)
