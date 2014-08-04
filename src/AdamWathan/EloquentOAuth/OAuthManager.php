@@ -121,6 +121,7 @@ class OAuthManager
 
     protected function updateUser($user, $provider, $details)
     {
+        Log::info("OAuthManager::updateUser() --> User: " . print_r($user, true));
         $this->users->store($user);
         $this->updateAccessToken($user, $provider, $details);
     }
@@ -181,7 +182,7 @@ class OAuthManager
     protected function addAccessToken($user, $provider, ProviderUserDetails $details)
     {
 
-        Log::info("User: " . print_r($user, true));
+        Log::info("OAuthManager::addAccessToken() --> User: " . print_r($user, true));
 
         $identity = new OAuthIdentity;
         $identity->user_id = $user->getKey();
