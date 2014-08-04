@@ -48,7 +48,7 @@ class OAuthManager
     public function authorize($provider)
     {
         $state = $this->generateState();
-        $redirectTo = $this->getProvider($provider)->authorizeUrl($state)
+        $redirectTo = $this->getProvider($provider)->authorizeUrl($state);
         Log::info("OAuthManager::authorize() --> redirecting to: $redirectTo");
         return $this->redirect->to($redirectTo);
     }
