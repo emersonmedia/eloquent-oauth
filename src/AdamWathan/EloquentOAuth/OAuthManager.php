@@ -180,6 +180,9 @@ class OAuthManager
 
     protected function addAccessToken($user, $provider, ProviderUserDetails $details)
     {
+
+        Log::info("User: " . print_r($user, true));
+
         $identity = new OAuthIdentity;
         $identity->user_id = $user->getKey();
         $identity->provider = $provider;
