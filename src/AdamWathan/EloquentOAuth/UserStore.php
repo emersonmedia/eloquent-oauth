@@ -37,7 +37,8 @@ class UserStore
      */
     public function findInApp(ProviderUserDetails $userDetails)
     {
-        return $this->model->where('email', '=', $userDetails->getEmail())
+        $user = new $this->model;
+        return $user->where('email', '=', $userDetails->getEmail())
             ->first();
     }
 }
