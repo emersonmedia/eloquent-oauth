@@ -155,6 +155,10 @@ class OAuthManager
                 return $appUser;
             }
         }
+        else
+        {
+            return $this->users->findByIdentity($identity);
+        }
 
     }
 

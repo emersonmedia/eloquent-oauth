@@ -39,6 +39,7 @@ class UserStore
      */
     public function findInApp(ProviderUserDetails $userDetails)
     {
+        Log::info("UserStore::findInApp() --> UserDetails: " . print_r($userDetails, true));
         $user = new $this->model;
         $user = $user->where('email', '=', $userDetails->email)
             ->first();
