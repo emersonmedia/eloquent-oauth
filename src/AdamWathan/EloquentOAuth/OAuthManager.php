@@ -58,6 +58,7 @@ class OAuthManager
         $this->verifyState();
         $details = $this->getUserDetails($provider);
         $user = $this->getUser($provider, $details);
+        Log::info("OAuthManager::login() --> User: " . print_r($user, true));
         if ($callback) {
             $callback($user, $details);
         }
