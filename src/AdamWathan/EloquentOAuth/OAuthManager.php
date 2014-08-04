@@ -140,7 +140,7 @@ class OAuthManager
         if (is_null($identity))
         {
             // Check to see if user actually exist on webapp
-            $appUser = $this->users->findAppUser($details);
+            $appUser = $this->users->findInApp($details);
             if (is_null($appUser))
             {
                 return null;
