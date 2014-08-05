@@ -2,7 +2,15 @@
 
 use Illuminate\Support\Facades\Log;
 
-class UserStore
+/**
+ * Provides basic access and manipulation for user objects
+ *
+ * @todo: the methods of this class can be enforced by implementing an interface
+ * and making any user defined "UserStore" to implement that interface in order
+ * to be used by this library. Then, the config value 'user-store', should be
+ * a class that implement the interface
+ */
+class UserStore implements UserStoreInterface
 {
     protected $model;
 
@@ -28,14 +36,7 @@ class UserStore
     }
 
     /**
-     * Searches the user in the webapp. Should return the user or null
-     * if not found.
-     * This default implementation searches by email, but this can be overriden
-     * in the webapp, to use it's own search logic.
-     *
-     * @author diego <diego@emersonmedia.com>
-     * @param  ProviderUserDetails $UserDetails [description]
-     * @return User (webapp user class)
+     * @see \AdamWathan\EloquentOAuth\UserStoreInterface::findInApp
      */
     public function findInApp(ProviderUserDetails $userDetails)
     {
