@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use AdamWathan\EloquentOAuth\Exceptions\ProviderNotRegisteredException;
 use AdamWathan\EloquentOAuth\Exceptions\InvalidAuthorizationCodeException;
+use AdamWathan\EloquentOAuth\Exceptions\AppUserNotFoundException;
+
 use AdamWathan\EloquentOAuth\Providers\ProviderInterface;
 
 class OAuthManager
