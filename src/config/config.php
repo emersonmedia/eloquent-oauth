@@ -45,17 +45,4 @@ return array(
     */
     'app-user-not-found-behavior' => 'create',
 
-    /*
-    |--------------------------------------------------------------------------
-    | user-store
-    |--------------------------------------------------------------------------
-    |
-    | We need to know which concrete class provides the implementations for the
-    | interaction with the webapp user store.
-    | You can implement your own UserStore in your own app, by extending the
-    | AdamWathan\EloquentOAuth\UserStore and overriding the methods needed.
-    |
-     */
-    'user-store' => 'AdamWathan\EloquentOAuth\UserStore'
-
 );

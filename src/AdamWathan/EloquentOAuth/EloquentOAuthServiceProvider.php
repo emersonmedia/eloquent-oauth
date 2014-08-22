@@ -45,13 +45,7 @@ class EloquentOAuthServiceProvider extends ServiceProvider {
     {
         $this->configureOAuthIdentitiesTable();
         $this->configureOAuthManager();
-        $userStoreClass = $app['config']['eloquent-oauth::user-store'];
-        $users = new $userStoreClass($app['config']['auth.model']);
-        //check that $users implements the UserStoreInterface
-        if (!($users instanceof UserStoreInterface))
-        {
-            throw new \Exception("$userStoreClass must implement AdamWathan\EloquentOAuth\UserStoreInterface");
-        }
+        $users = new UserStore($app['config']['auth.model']);
         $stateManager = new StateManager($app['session.store'], $app['request']);
         $oauth = new OAuthManager($app['auth'], $app['redirect'], $stateManager, $users, new IdentityStore);
         $this->registerProviders($oauth);
