@@ -1,12 +1,38 @@
 <?php namespace AdamWathan\EloquentOAuth;
 
+/**
+ * This interface defines the needed methods that specifc UserStore class
+ * must implement
+ *
+ * @author Diego Caprioli <diego@emersonmedia.com>
+ */
 interface UserStoreInterface
 {
-    public function create();
-    public function store($user);
-    public function findByIdentity($identity);
 
     /**
+     * Creates and returns a new User model instance
+     *
+     * @return The created User instance
+     */
+    public function create();
+
+    /**
+     * Saves the user
+     *
+     * @param $user The user instance to save
+     * @return bool True if model was saved, false otherwise.
+     */
+    public function store($user);
+
+    /**
+     * Returns the user that corresponds to the requested identity
+     *
+     * @param  OAuthIdentity $identity
+     * @return The user instace
+     */
+    public function findByIdentity($identity);
+
+	/**
      * Searches the user in the webapp. Should return the user or null
      * if not found.
      * This default implementation searches by email, but this can be overriden
@@ -17,4 +43,5 @@ interface UserStoreInterface
      * @return User (webapp user class)
      */
     public function findInApp(ProviderUserDetails $userDetails);
+    
 }
